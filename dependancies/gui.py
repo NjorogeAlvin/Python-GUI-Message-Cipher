@@ -13,8 +13,7 @@ class App(ctk.CTk):
         self.title("Message Cipher")
         self.geometry("600x400")
         self._set_appearance_mode("dark")
-        self.resizable(True, True)
-        self.state("zoomed")
+        
 
         #Labels
         self.message_label = ctk.CTkLabel(self, text="Enter your message", fg_color="navy")
@@ -36,7 +35,7 @@ class App(ctk.CTk):
         self.key=ctk.CTkEntry(self)
         self.key.grid(row=6, column=0, columnspan=4, padx=20, pady=20, sticky="nsew")
         self.key.insert(0, self.secret_key)
-        self.display = ctk.CTkEntry(self, placeholder_text="Decoded message")
+        self.display = ctk.CTkEntry(self, placeholder_text="Output message")
         self.display.grid(row=9, column=0,  columnspan=4, rowspan=3, padx=20, pady=20, sticky="nsew")
         
         #Buttons
@@ -59,8 +58,8 @@ class App(ctk.CTk):
     def decrypt_button(self):
         token = self.display.get()
         message = self.f.decrypt(token.encode())
-        self.entry.delete(0, "end")
-        self.entry.insert(0, message.decode())
+        self.display.delete(0, "end")
+        self.display.insert(0, message.decode())
 
     def copy_button(self):
         self.clipboard_clear()
