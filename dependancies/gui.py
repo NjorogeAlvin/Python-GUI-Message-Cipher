@@ -1,17 +1,24 @@
 import customtkinter as ctk
+from cryptography.fernet import Fernet
 
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-    
+
+         #Fernet Key Stuff
+        self.secret_key = Fernet.generate_key()
+        self.f = Fernet(self.secret_key)
+
+        #GUI Elements
         self.title("Message Cipher")
         self.geometry("600x500")
         self._set_appearance_mode("dark")
         self.entry=ctk.CTkEntry(self, placeholder_text="Input message")
         self.entry.grid(row=0, columnspan=4, padx=20, pady=20, sticky="ew")
         self.columnconfigure((0, 1),  weight=1)
-        self.key=ctk.CTkEntry(self, placeholder_text="Secret key")
+        self.key=ctk.CTkEntry(self)
         self.key.grid(row=2, columnspan=4, padx=20, pady=20, sticky="ew")
+        self.key.insert(0, self.secret_key)
         self.display = ctk.CTkEntry(self, placeholder_text="Decoded message")
         self.display.grid(row=4, columnspan=4, padx=20, pady=20, sticky="ew")
         
@@ -27,12 +34,20 @@ class App(ctk.CTk):
     
     #Button Functions
     def encrypt_button(self):
-        print("Encrypted")
+        message = self.entry.get()
+        token = self.f.encrypt(message.encode())
+        self.display.delete(0, "end")
+        self.display.insert(0, token.decode())
+        
     def decrypt_button(self):
-        print("Decrypted")
-    def copy_button(self):
-        print("Copied to clipboard")
+        token = self.display.get()
+        message = self.f.decrypt(token.encode())
+        self.entry.delete(0, "end")
+        self.entry.insert(0, message.decode())
 
+    def copy_button(self):
+        self.clipboard_clear()
+        self.clipboard_append(self.display.get())
 
 
 app = App()
