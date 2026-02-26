@@ -64,8 +64,3 @@ class App(ctk.CTk):
     def copy_button(self):
         self.clipboard_clear()
         self.clipboard_append(self.display.get())
-
-
-app = App()
-app.mainloop()
-
