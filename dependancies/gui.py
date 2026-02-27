@@ -5,14 +5,14 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        #Fernet Key Stuff
-        self.secret_key = Fernet.generate_key()
-        self.f = Fernet(self.secret_key)
-
+     
         #GUI Elements
         self.title("Message Cipher")
         self.geometry("600x400")
         self._set_appearance_mode("dark")
+        self.columnconfigure((0, 1, 2, 3, 4),  weight=1)
+        self.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1)
+        self.rowconfigure((9, 10, 11), weight=3)
         
 
         #Labels
@@ -29,26 +29,28 @@ class App(ctk.CTk):
         #Entry Bars
         self.entry=ctk.CTkEntry(self, placeholder_text="Input message")
         self.entry.grid(row=1, column=0, columnspan=4, rowspan=3, padx=20, pady=20, sticky="nsew")
-        self.columnconfigure((0, 1, 2, 3, 4),  weight=1)
-        self.rowconfigure((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), weight=1)
-        self.rowconfigure((9, 10, 11), weight=3)
-        self.key=ctk.CTkEntry(self)
+        self.key=ctk.CTkEntry(self, placeholder_text="Generate Custom Key")
         self.key.grid(row=6, column=0, columnspan=4, padx=20, pady=20, sticky="nsew")
-        self.key.insert(0, self.secret_key)
         self.display = ctk.CTkEntry(self, placeholder_text="Output message")
         self.display.grid(row=9, column=0,  columnspan=4, rowspan=3, padx=20, pady=20, sticky="nsew")
         
         #Buttons
         self.encrypt_button = ctk.CTkButton(self, text="Encrypt", command=self.encrypt_button)
-        self.decrypt_button = ctk.CTkButton(self, text="Decrypyt", command=self.decrypt_button)
-        self.copy_button = ctk.CTkButton(self, text="Copy", command=self.copy_button)
+        self.decrypt_button = ctk.CTkButton(self, text="Decrypt", command=self.decrypt_button)
+        self.generate_button = ctk.CTkButton(self, text="Generate key", command=self.generate_button)
 
         #Button Grid
         self.encrypt_button.grid(row=4,column=0, columnspan=2, padx=5, pady= 5, sticky="ew")
         self.decrypt_button.grid(row=4,column=2, padx=5, columnspan=2, pady= 5, sticky="ew")
-        self.copy_button.grid(row= 7, column=0, columnspan=4, padx=5, pady= 5, sticky="ew")
+        self.generate_button.grid(row= 7, column=0, columnspan=4, padx=5, pady= 5, sticky="ew")
     
     #Button Functions
+    def generate_button(self):
+        self.key.delete(0, "end")
+        self.key_1 = Fernet.generate_key()
+        self.f = Fernet(self.key_1)
+        self.key.insert(0, self.key_1.decode())
+
     def encrypt_button(self):
         message = self.entry.get()
         token = self.f.encrypt(message.encode())
@@ -56,11 +58,9 @@ class App(ctk.CTk):
         self.display.insert(0, token.decode())
         
     def decrypt_button(self):
-        token = self.display.get()
-        message = self.f.decrypt(token.encode())
+        custom_key = self.key.get()
+        custom_message = self.entry.get()
+        self.custom_f = Fernet(custom_key)
+        custom_token = self.custom_f.decrypt(custom_message.encode())
         self.display.delete(0, "end")
-        self.display.insert(0, message.decode())
-
-    def copy_button(self):
-        self.clipboard_clear()
-        self.clipboard_append(self.display.get())
+        self.display.insert(0, custom_token.decode())

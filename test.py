@@ -4,13 +4,13 @@ message = input("Enter your message: ")
 
 key = Fernet.generate_key()
 
-f = Fernet(key)
+new_f = Fernet(key)
 
-token=f.encrypt(message.encode())
+token=new_f.encrypt(message.encode())
 
 print(token)
 
-token_1 = f.decrypt(token).decode()
+token_1 = new_f.decrypt(token).decode()
 
 print(token_1)
 
