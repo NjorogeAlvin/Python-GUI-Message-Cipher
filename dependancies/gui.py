@@ -53,7 +53,9 @@ class App(ctk.CTk):
 
     def encrypt_button(self):
         message = self.entry.get()
-        token = self.f.encrypt(message.encode())
+        custom_key = self.key.get()
+        f = Fernet(custom_key)
+        token = f.encrypt(message.encode())
         self.display.delete(0, "end")
         self.display.insert(0, token.decode())
         
